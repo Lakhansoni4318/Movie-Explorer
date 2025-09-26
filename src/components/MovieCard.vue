@@ -7,7 +7,7 @@
       class="absolute top-3 right-3 p-2 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 z-10"
     >
       <HeartIcon
-        :class="isFavorite ? 'w-5 h-5 text-red-500' : 'w-5 h-5 text-white'"
+        :class="isFav ? 'w-5 h-5 text-red-500' : 'w-5 h-5 text-white'"
       />
     </button>
     <img
@@ -24,8 +24,8 @@
 
       <div class="flex flex-wrap gap-2 mb-3">
         <span
-          v-for="genre in genreNames"
-          :key="genre"
+          v-for="(genre, index) in genreNames"
+          :key="index"
           class="bg-blue-600 px-2 py-1 rounded-full text-xs"
         >
           {{ genre }}
@@ -48,6 +48,7 @@
 
     <div class="p-4">
       <button
+      @click="movieDetails(movie.id)"
         class="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg font-semibold"
       >
         View Details
@@ -56,20 +57,45 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
-import { HeartIcon } from '@heroicons/vue/24/solid';
+import { HeartIcon } from "@heroicons/vue/24/solid";
+import { useFavoritesStore } from "@/stores/favorites";
+import apiService from "@/api/apiService";
+
 const showMore = ref(false);
-const isFavorite = ref(false)
-const toggleFavorite = () => isFavorite.value = !isFavorite.value;
 
 const props = defineProps({
-  movie: Object,
+  movie: {
+    type: Object,
+    required: true,
+  },
   genreNames: {
     type: Array,
     default: () => [],
   },
 });
+
+const favoritesStore = useFavoritesStore();
+
+const isFav = computed(() => favoritesStore.isFavorite(props.movie.id));
+
+function toggleFavorite() {
+  if (isFav.value) {
+    favoritesStore.removeFavorite(props.movie.id);
+  } else {
+    favoritesStore.addFavorite(props.movie);
+  }
+}
+
+async function movieDetails(id:number){
+  try {
+    const { data } = await apiService.movieDetails(id);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 const shortOverview = computed(() => {
   return props.movie?.overview?.length > 150

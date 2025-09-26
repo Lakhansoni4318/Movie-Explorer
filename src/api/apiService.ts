@@ -9,7 +9,7 @@ export default {
       },
     });
   },
-  searchMovies(params:any) {
+  searchMovies(params: any) {
     return api.get("/search/movie", {
       params: {
         api_key: API_KEY,
@@ -17,12 +17,20 @@ export default {
       },
     });
   },
-  popularMovies(page:Number) {
+  popularMovies(page: Number) {
     return api.get("/movie/popular", {
       params: {
         api_key: API_KEY,
         language: "en-US",
-        page: page
+        page: page,
+      },
+    });
+  },
+  movieDetails(id:number) {
+    return api.get(`/movie/${id}`, {
+      params: {
+        api_key: API_KEY,
+        language: "en-US",
       },
     });
   },
