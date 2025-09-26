@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/app.vue","./src/components/herosection.vue","./src/components/moviecard.vue","./src/components/moviegrid.vue","./src/components/navbar.vue","./src/components/searchbar.vue","./src/views/home.vue"],"errors":true,"version":"5.8.3"}
