@@ -9,17 +9,14 @@
 
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-6">
-        <button
-          class="text-gray-300 hover:text-purple-400 transition-colors"
-          @click="$emit('goFavorites')"
-        >
-          Favorites
+        <button :class="navButtonClass('/')" @click="goToRoute('/')">
+          Search
         </button>
         <button
-          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition"
-          @click="$emit('openSearch')"
+          :class="navButtonClass('/favorites')"
+          @click="goToRoute('/favorites')"
         >
-          Search
+          Favorites
         </button>
       </nav>
 
@@ -52,16 +49,22 @@
         class="md:hidden bg-gray-900 border-t border-gray-800 px-6 py-4 space-y-4"
       >
         <button
-          class="block w-full text-left text-gray-300 hover:text-purple-400 transition-colors"
-          @click="$emit('goFavorites'); toggleMobileMenu()"
-        >
-          Favorites
-        </button>
-        <button
-          class="block w-full text-left px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition"
-          @click="$emit('openSearch'); toggleMobileMenu()"
+          :class="navButtonClass('/') + ' block w-full text-left'"
+          @click="
+            goToRoute('/');
+            toggleMobileMenu();
+          "
         >
           Search
+        </button>
+        <button
+          :class="navButtonClass('/favorites') + ' block w-full text-left'"
+          @click="
+            goToRoute('/favorites');
+            toggleMobileMenu();
+          "
+        >
+          Favorites
         </button>
       </div>
     </transition>
@@ -69,12 +72,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
+const router = useRouter();
+const route = useRoute();
 const isMobileOpen = ref(false);
 
 const toggleMobileMenu = () => {
   isMobileOpen.value = !isMobileOpen.value;
+};
+
+const goToRoute = (path: string) => {
+  router.push(path);
+};
+
+const navButtonClass = (path: string) => {
+  return route.path === path
+    ? "px-4 py-2 rounded-lg font-medium transition bg-purple-600 text-white"
+    : "px-4 py-2 rounded-lg font-medium transition text-gray-300 hover:bg-purple-700 hover:text-white";
 };
 </script>
 
