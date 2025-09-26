@@ -9,7 +9,7 @@ export default {
       },
     });
   },
-  searchMovies(params) {
+  searchMovies(params:any) {
     return api.get("/search/movie", {
       params: {
         api_key: API_KEY,
