@@ -34,4 +34,12 @@ export default {
       },
     });
   },
+    movieVideos(id:number) {
+    return api.get(`/movie/${id}/videos`, {
+      params: {
+        api_key: API_KEY,
+        language: "en-US",
+      },
+    });
+  },
 };

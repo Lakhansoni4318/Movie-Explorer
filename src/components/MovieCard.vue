@@ -48,7 +48,7 @@
 
     <div class="p-4">
       <button
-      @click="movieDetails(movie.id)"
+      @click="navigateToMovieDetails(movie.id)"
         class="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg font-semibold"
       >
         View Details
@@ -61,10 +61,10 @@
 import { ref, computed } from "vue";
 import { HeartIcon } from "@heroicons/vue/24/solid";
 import { useFavoritesStore } from "@/stores/favorites";
-import apiService from "@/api/apiService";
+import { useRouter } from "vue-router";
 
 const showMore = ref(false);
-
+const router = useRouter();
 const props = defineProps({
   movie: {
     type: Object,
@@ -88,13 +88,8 @@ function toggleFavorite() {
   }
 }
 
-async function movieDetails(id:number){
-  try {
-    const { data } = await apiService.movieDetails(id);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
+function navigateToMovieDetails(id:number){
+router.push({ name: "MovieDetails", params: { id } });
 }
 
 const shortOverview = computed(() => {
