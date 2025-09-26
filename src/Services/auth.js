@@ -1,6 +1,6 @@
 import Ls from './ls';
 import axios from 'axios';
-import ApiRequest from '@/Module/Global/api/apiService.js';
+import ApiRequest from '@/api/apiService.ts';
 export default {
   logintoken(token) {
     Ls.set('auth.token', token.token_data.token, true);

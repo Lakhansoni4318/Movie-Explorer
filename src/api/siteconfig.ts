@@ -1,6 +1,6 @@
 import axios from 'axios';
-import LS from '@/Module/Global/Services/ls.js';
-import Authanticated from '@/Module/Global/Services/auth.js';
+import LS from '@/Services/ls.js';
+import Authanticated from '@/Services/auth.js';
 
 var instance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "",
