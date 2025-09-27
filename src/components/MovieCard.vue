@@ -1,16 +1,13 @@
 <template>
   <div
-    class="w-96 h-auto mx-auto bg-gray-900 text-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300 flex flex-col relative mb-6 group"
+    class="w-96 mx-auto bg-gray-900 text-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300 flex flex-col relative mb-6 group"
   >
-    <!-- Favorite Button -->
     <button
       v-if="loaded"
       @click="toggleFavorite"
       class="absolute top-3 right-3 p-2 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 z-10"
     >
-      <HeartIcon
-        :class="isFav ? 'w-5 h-5 text-red-500' : 'w-5 h-5 text-white'"
-      />
+      <HeartIcon :class="isFav ? 'w-5 h-5 text-red-500' : 'w-5 h-5 text-white'" />
     </button>
 
     <div class="relative w-full h-80">
@@ -30,9 +27,8 @@
         </svg>
       </div>
 
-      <!-- Actual Image -->
       <img
-      loading="lazy"
+        loading="lazy"
         :src="currentSrc"
         :alt="movie.title"
         class="w-full h-full object-cover rounded-t-xl transition-opacity duration-700"
@@ -42,49 +38,50 @@
       />
     </div>
 
-    <!-- Movie Info -->
     <div v-if="loaded" class="p-4 flex flex-col flex-1">
-      <h2 class="text-2xl font-bold mb-2">{{ movie.title }}</h2>
-      <p class="text-gray-400 text-sm mb-2">
-        Release: {{ movie.release_date }} | Rating: {{ movie.vote_average }} ⭐
+      <h2 class="text-2xl font-bold mb-1 truncate">{{ movie.title || 'Untitled Movie' }}</h2>
+      <p class="text-gray-400 text-sm mb-3">
+        Release: {{ movie.release_date || 'N/A' }} | Rating: {{ movie.vote_average ?? 'N/A' }} ⭐
       </p>
 
+      <div
+        v-if="$route.name === 'Favorites' && isFav && (movie.notes || movie.rating)"
+        class="mb-3 p-3 bg-gray-800 rounded-lg border border-gray-700 text-sm"
+      >
+        <p v-if="movie.notes">📝 {{ movie.notes }}</p>
+
+        <p v-if="movie.rating">⭐ Rating: {{ movie.rating }}/5</p>
+      </div>
+
+      <!-- Genres -->
       <div class="flex flex-wrap gap-2 mb-3">
         <span
-          v-for="(genre, index) in genreNames"
+          v-for="(genre, index) in genreNames || []"
           :key="index"
           class="bg-blue-600 px-2 py-1 rounded-full text-xs"
         >
           {{ genre }}
         </span>
+        <span v-if="!genreNames || genreNames.length === 0" class="text-gray-500 text-xs">
+          No genres
+        </span>
       </div>
 
-      <p class="text-gray-300 text-sm">
+      <!-- Overview -->
+      <p class="text-gray-300 text-sm mb-2">
         <span v-if="!showMore">{{ shortOverview }}</span>
-        <span v-else>{{ movie.overview }}</span>
+        <span v-else>{{ movie.overview || 'No overview available.' }}</span>
       </p>
-      <!-- Only show notes/rating on Favorites page -->
-      <div
-        v-if="$route.name == 'favorites' && isFav"
-        class="mt-2 p-2 bg-gray-800 rounded"
-      >
-        <p v-if="movie.notes" class="text-sm text-gray-300">
-          📝 Notes: {{ movie.notes }}
-        </p>
-        <p v-if="movie.rating" class="text-sm text-yellow-400">
-          ⭐ Rating: {{ movie.rating }}/5
-        </p>
-      </div>
-
       <button
-        v-if="movie.overview.length > 150"
+        v-if="movie.overview?.length > 150"
         @click="showMore = !showMore"
-        class="mt-2 text-indigo-400 text-sm font-semibold hover:underline self-start"
+        class="mt-1 text-indigo-400 text-sm font-semibold hover:underline self-start"
       >
-        {{ showMore ? "Show Less" : "Show More" }}
+        {{ showMore ? 'Show Less' : 'Show More' }}
       </button>
     </div>
 
+    <!-- View Details Button -->
     <div v-if="loaded" class="p-4">
       <button
         @click="navigateToMovieDetails(movie.id)"
@@ -94,65 +91,14 @@
       </button>
     </div>
   </div>
-
-  <!-- Favorite Confirmation Modal -->
-  <div
-    v-if="showFavModal"
-    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-  >
-    <div class="bg-gray-900 p-6 rounded-lg w-96 text-white">
-      <template v-if="modalAction === 'add'">
-        <h3 class="text-lg font-semibold mb-4">Add to Favorites?</h3>
-
-        <label class="block mb-2">Notes (optional)</label>
-        <textarea
-          v-model="note"
-          placeholder="Add your notes..."
-          class="w-full h-24 p-2 rounded bg-gray-800 border border-gray-700 text-white mb-3"
-        ></textarea>
-
-        <label class="block mb-2">Rating (optional)</label>
-        <input
-          type="number"
-          v-model.number="rating"
-          min="1"
-          max="5"
-          placeholder="1-5"
-          class="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white"
-        />
-      </template>
-
-      <template v-else-if="modalAction === 'remove'">
-        <h3 class="text-lg font-semibold mb-4">
-          Are you sure you want to remove this movie from favorites?
-        </h3>
-        <p>{{ selectedMovie?.title }}</p>
-      </template>
-
-      <div class="flex justify-end gap-3 mt-4">
-        <button
-          @click="confirmFavoriteAction"
-          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded"
-        >
-          Yes
-        </button>
-        <button
-          @click="closeFavModal"
-          class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, type Ref } from "vue";
-import { HeartIcon } from "@heroicons/vue/24/solid";
-import { useFavoritesStore } from "@/stores/favorites";
-import { useRouter } from "vue-router";
-import { toast } from "vue3-toastify";
+import { ref, computed, watch, type Ref } from 'vue';
+import { HeartIcon } from '@heroicons/vue/24/solid';
+import { useFavoritesStore } from '@/stores/favorites';
+import { useRouter } from 'vue-router';
+import { toast } from 'vue3-toastify';
 
 interface Movie {
   id: number;
@@ -169,8 +115,8 @@ const showMore = ref(false);
 const loaded: Ref<boolean> = ref(false);
 const router = useRouter();
 const showFavModal = ref(false);
-const modalAction = ref<"add" | "remove" | null>(null);
-const note = ref("");
+const modalAction = ref<'add' | 'remove' | null>(null);
+const note = ref('');
 const rating = ref<number | null>(null);
 let selectedMovie: Movie | null = null;
 
@@ -186,11 +132,11 @@ const isFav = computed(() => favoritesStore.isFavorite(props.movie.id));
 function toggleFavorite() {
   selectedMovie = props.movie;
   if (isFav.value) {
-    modalAction.value = "remove";
+    modalAction.value = 'remove';
     showFavModal.value = true;
   } else {
-    modalAction.value = "add";
-    note.value = "";
+    modalAction.value = 'add';
+    note.value = '';
     rating.value = null;
     showFavModal.value = true;
   }
@@ -200,42 +146,40 @@ function closeFavModal() {
   showFavModal.value = false;
   modalAction.value = null;
   selectedMovie = null;
-  note.value = "";
+  note.value = '';
   rating.value = null;
 }
 
 function confirmFavoriteAction() {
   if (!selectedMovie) return;
 
-  if (modalAction.value === "add") {
+  if (modalAction.value === 'add') {
     favoritesStore.addFavorite({
       ...selectedMovie,
-      notes: note.value || "",
+      notes: note.value || '',
       rating: rating.value || 0,
     });
-    toast.success("Movie added to favorites");
-  } else if (modalAction.value === "remove") {
+    toast.success('Movie added to favorites');
+  } else if (modalAction.value === 'remove') {
     favoritesStore.removeFavorite(selectedMovie.id);
-    toast.info("Movie removed from favorites");
+    toast.info('Movie removed from favorites');
   }
 
   closeFavModal();
 }
 
 function navigateToMovieDetails(id: number) {
-  router.push({ name: "MovieDetails", params: { id } });
+  router.push({ name: 'MovieDetails', params: { id } });
 }
 
 const shortOverview = computed(() => {
   return props.movie.overview.length > 150
-    ? props.movie.overview.slice(0, 150) + "..."
+    ? props.movie.overview.slice(0, 150) + '...'
     : props.movie.overview;
 });
 
-const placeholderImage = "/images/placeholder.svg";
-const currentSrc: Ref<string> = ref(
-  `https://image.tmdb.org/t/p/w500/${props.movie.poster_path}`
-);
+const placeholderImage = '/images/placeholder.svg';
+const currentSrc: Ref<string> = ref(`https://image.tmdb.org/t/p/w500/${props.movie.poster_path}`);
 
 function onLoad(): void {
   loaded.value = true;
