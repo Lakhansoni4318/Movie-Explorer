@@ -1,9 +1,6 @@
 <template>
   <!-- Movie Details -->
-  <div
-    class="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen p-6"
-    v-if="movie"
-  >
+  <div class="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen p-6" v-if="movie">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Left Side Poster -->
       <div class="flex justify-center">
@@ -29,9 +26,7 @@
       <div class="lg:col-span-2 space-y-6">
         <!-- Title -->
         <h1 class="text-4xl font-bold text-blue-400">{{ movie.title }}</h1>
-        <p class="italic text-lg text-blue-200" v-if="movie.tagline">
-          "{{ movie.tagline }}"
-        </p>
+        <p class="italic text-lg text-blue-200" v-if="movie.tagline">"{{ movie.tagline }}"</p>
 
         <!-- Rating + Date + Runtime -->
         <div class="flex items-center gap-6 text-gray-300 text-sm">
@@ -80,8 +75,13 @@
         <!-- Box Office -->
         <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
           <h3 class="text-xl font-semibold text-blue-400 mb-2">Box Office</h3>
-          <p>Budget: <span class="text-gray-300">${{ movie.budget.toLocaleString() }}</span></p>
-          <p>Revenue: <span class="text-green-400 font-bold">${{ movie.revenue.toLocaleString() }}</span></p>
+          <p>
+            Budget: <span class="text-gray-300">${{ movie.budget.toLocaleString() }}</span>
+          </p>
+          <p>
+            Revenue:
+            <span class="text-green-400 font-bold">${{ movie.revenue.toLocaleString() }}</span>
+          </p>
         </div>
 
         <!-- Production -->
@@ -98,22 +98,19 @@
   </div>
 
   <!-- Loading State -->
-  <div
-    v-else
-    class="flex justify-center items-center min-h-screen text-gray-400"
-  >
+  <div v-else class="flex justify-center items-center min-h-screen text-gray-400">
     Loading movie details...
   </div>
 </template>
 
 <script lang="ts" setup>
-import apiService from "@/api/apiService";
-import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import apiService from '@/api/apiService';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const movieId = Number(route.params.id);
-
+console.log(movieId);
 const movie = ref<any>(null);
 const trailerUrl = ref<string | null>(null);
 const loadingImage = ref(true);
@@ -130,20 +127,19 @@ async function fetchMovieDetails(id: number) {
 
     const videosRes = await apiService.movieVideos(id);
     const trailers = videosRes.data.results.filter(
-      (v: any) => v.type === "Trailer" && v.site === "YouTube"
+      (v: any) => v.type === 'Trailer' && v.site === 'YouTube'
     );
 
-    trailerUrl.value = trailers.length > 0
-      ? `https://www.youtube.com/watch?v=${trailers[0].key}`
-      : null;
+    trailerUrl.value =
+      trailers.length > 0 ? `https://www.youtube.com/watch?v=${trailers[0].key}` : null;
   } catch (error) {
-    console.error("Failed to fetch movie details or trailer:", error);
+    console.error('Failed to fetch movie details or trailer:', error);
   }
 }
 
 function openTrailer() {
   if (trailerUrl.value) {
-    window.open(trailerUrl.value, "_blank");
+    window.open(trailerUrl.value, '_blank');
   }
 }
 </script>
