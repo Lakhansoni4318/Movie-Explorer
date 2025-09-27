@@ -1,16 +1,18 @@
 <template>
   <div
-    class="w-96 mx-auto bg-gray-900 text-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300 flex flex-col relative mb-6 group"
+    class="max-w-sm w-full mx-auto bg-gray-900 text-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300 flex flex-col relative mb-6 group"
   >
+    <!-- Favorite Button -->
     <button
       v-if="loaded"
       @click="toggleFavorite"
-      class="absolute top-3 right-3 p-2 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 z-10"
+      class="absolute top-3 right-3 p-2 rounded-full bg-black/60 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition duration-300"
     >
       <HeartIcon :class="isFav ? 'w-5 h-5 text-red-500' : 'w-5 h-5 text-white'" />
     </button>
 
-    <div class="relative w-full h-80">
+    <!-- Movie Image -->
+    <div class="relative w-full aspect-[4/3]">
       <div
         v-if="!loaded"
         class="absolute inset-0 flex items-center justify-center bg-gray-700 animate-pulse rounded-t-xl"
@@ -38,6 +40,7 @@
       />
     </div>
 
+    <!-- Movie Info -->
     <div v-if="loaded" class="p-4 flex flex-col flex-1">
       <h2 class="text-2xl font-bold mb-1 truncate">{{ movie.title || 'Untitled Movie' }}</h2>
       <p class="text-gray-400 text-sm mb-3">
@@ -49,7 +52,6 @@
         class="mb-3 p-3 bg-gray-800 rounded-lg border border-gray-700 text-sm"
       >
         <p v-if="movie.notes">📝 {{ movie.notes }}</p>
-
         <p v-if="movie.rating">⭐ Rating: {{ movie.rating }}/5</p>
       </div>
 
@@ -89,6 +91,51 @@
       >
         View Details
       </button>
+    </div>
+  </div>
+
+  <!-- Favorites Modal -->
+  <div v-if="showFavModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-gray-900 p-6 rounded-lg w-96 text-white">
+      <template v-if="modalAction === 'add'">
+        <h3 class="text-lg font-semibold mb-4">Add to Favorites?</h3>
+
+        <label class="block mb-2">Notes (optional)</label>
+        <textarea
+          v-model="note"
+          placeholder="Add your notes..."
+          class="w-full h-24 p-2 rounded bg-gray-800 border border-gray-700 text-white mb-3"
+        ></textarea>
+
+        <label class="block mb-2">Rating (optional)</label>
+        <input
+          type="number"
+          v-model.number="rating"
+          min="1"
+          max="5"
+          placeholder="1-5"
+          class="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white"
+        />
+      </template>
+
+      <template v-else-if="modalAction === 'remove'">
+        <h3 class="text-lg font-semibold mb-4">
+          Are you sure you want to remove this movie from favorites?
+        </h3>
+        <p>{{ selectedMovie?.title }}</p>
+      </template>
+
+      <div class="flex justify-end gap-3 mt-4">
+        <button
+          @click="confirmFavoriteAction"
+          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded"
+        >
+          Yes
+        </button>
+        <button @click="closeFavModal" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded">
+          Cancel
+        </button>
+      </div>
     </div>
   </div>
 </template>
