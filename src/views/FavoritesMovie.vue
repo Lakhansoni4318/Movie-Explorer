@@ -11,6 +11,7 @@
         v-for="m in favorites"
         :key="m.id"
         :movie="m"
+         v-memo="[m.id, m.genreNames]"
         :genre-names="getGenreNames(m)"
       />
     </div>

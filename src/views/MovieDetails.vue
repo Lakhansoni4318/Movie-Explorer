@@ -13,6 +13,7 @@
 
           <!-- Actual Image -->
           <img
+          loading="lazy"
             v-show="!loadingImage"
             :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
             :alt="movie.title"
@@ -42,6 +43,7 @@
           <span
             v-for="genre in movie.genres"
             :key="genre.id"
+             v-memo="[genre.id]"
             class="px-3 py-1 rounded-full bg-purple-700 text-xs"
           >
             {{ genre.name }}
@@ -88,7 +90,7 @@
         <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
           <h3 class="text-xl font-semibold text-blue-400 mb-2">Production</h3>
           <ul class="list-disc ml-6 text-gray-300">
-            <li v-for="company in movie.production_companies" :key="company.id">
+            <li v-for="company in movie.production_companies" v-memo="[company.id]" :key="company.id">
               {{ company.name }}
             </li>
           </ul>

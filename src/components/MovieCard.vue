@@ -32,6 +32,7 @@
 
       <!-- Actual Image -->
       <img
+      loading="lazy"
         :src="currentSrc"
         :alt="movie.title"
         class="w-full h-full object-cover rounded-t-xl transition-opacity duration-700"
