@@ -15,7 +15,17 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["vue3-toastify/global"]
+    "types": [
+      "vue3-toastify/global",
+      "vitest/globals",
+      "@vue/test-utils"
+    ]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/tests/**/*.ts"
+  ]
 }
