@@ -33,14 +33,11 @@
     "vite": "^7.1.7",
     "vue-tsc": "^3.0.7"
   },
-      "lint-staged": {
-    "*.{js,jsx,ts,tsx,vue,json,css,scss,md}": [
-      "prettier --write"
-    ]
-  },
-    "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-    }
+  "lint-staged": {
+  "*.{js,ts,vue,css,scss,html,json,md}": [
+    "prettier --write",
+    "git add"
+  ]
+}
+
 }
