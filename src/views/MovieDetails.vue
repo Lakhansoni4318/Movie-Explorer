@@ -1,4 +1,5 @@
 <template>
+  <!-- Movie Details -->
   <div
     class="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen p-6"
     v-if="movie"
@@ -6,11 +7,22 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Left Side Poster -->
       <div class="flex justify-center">
-        <img
-          :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
-          :alt="movie.title"
-          class="rounded-xl shadow-lg w-full max-w-sm object-cover transition-transform duration-700 ease-in-out hover:scale-105"
-        />
+        <div class="w-full max-w-sm rounded-xl overflow-hidden shadow-lg relative">
+          <!-- Skeleton while loading -->
+          <div
+            v-if="loadingImage"
+            class="animate-pulse bg-gray-700 w-full h-[400px] rounded-xl"
+          ></div>
+
+          <!-- Actual Image -->
+          <img
+            v-show="!loadingImage"
+            :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
+            :alt="movie.title"
+            class="rounded-xl shadow-lg w-full max-w-sm object-cover transition-transform duration-700 ease-in-out hover:scale-105"
+            @load="loadingImage = false"
+          />
+        </div>
       </div>
 
       <!-- Right Side Details -->
@@ -23,19 +35,11 @@
 
         <!-- Rating + Date + Runtime -->
         <div class="flex items-center gap-6 text-gray-300 text-sm">
-          <span class="flex items-center gap-1"
-            >⭐ {{ movie.vote_average.toFixed(1) }} ({{
-              movie.vote_count.toLocaleString()
-            }}
-            votes)</span
-          >
-          <span
-            >📅 {{ new Date(movie.release_date).toLocaleDateString() }}</span
-          >
-          <span
-            >⏱ {{ Math.floor(movie.runtime / 60) }}h
-            {{ movie.runtime % 60 }}m</span
-          >
+          <span class="flex items-center gap-1">
+            ⭐ {{ movie.vote_average.toFixed(1) }} ({{ movie.vote_count.toLocaleString() }} votes)
+          </span>
+          <span>📅 {{ new Date(movie.release_date).toLocaleDateString() }}</span>
+          <span>⏱ {{ Math.floor(movie.runtime / 60) }}h {{ movie.runtime % 60 }}m</span>
         </div>
 
         <!-- Genres -->
@@ -76,18 +80,8 @@
         <!-- Box Office -->
         <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
           <h3 class="text-xl font-semibold text-blue-400 mb-2">Box Office</h3>
-          <p>
-            Budget:
-            <span class="text-gray-300"
-              >${{ movie.budget.toLocaleString() }}</span
-            >
-          </p>
-          <p>
-            Revenue:
-            <span class="text-green-400 font-bold"
-              >${{ movie.revenue.toLocaleString() }}</span
-            >
-          </p>
+          <p>Budget: <span class="text-gray-300">${{ movie.budget.toLocaleString() }}</span></p>
+          <p>Revenue: <span class="text-green-400 font-bold">${{ movie.revenue.toLocaleString() }}</span></p>
         </div>
 
         <!-- Production -->
@@ -119,8 +113,10 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 const movieId = Number(route.params.id);
-const trailerUrl = ref<string | null>(null);
+
 const movie = ref<any>(null);
+const trailerUrl = ref<string | null>(null);
+const loadingImage = ref(true);
 
 onMounted(() => {
   fetchMovieDetails(movieId);
@@ -128,6 +124,7 @@ onMounted(() => {
 
 async function fetchMovieDetails(id: number) {
   try {
+    loadingImage.value = true; // reset skeleton before loading new image
     const { data } = await apiService.movieDetails(id);
     movie.value = data;
 
@@ -136,9 +133,9 @@ async function fetchMovieDetails(id: number) {
       (v: any) => v.type === "Trailer" && v.site === "YouTube"
     );
 
-    if (trailers.length > 0) {
-      trailerUrl.value = `https://www.youtube.com/watch?v=${trailers[0].key}`;
-    }
+    trailerUrl.value = trailers.length > 0
+      ? `https://www.youtube.com/watch?v=${trailers[0].key}`
+      : null;
   } catch (error) {
     console.error("Failed to fetch movie details or trailer:", error);
   }

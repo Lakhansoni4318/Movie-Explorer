@@ -1,0 +1,2 @@
+echo 'bun run prepush-check' > .husky/pre-push
+chmod +x .husky/pre-push

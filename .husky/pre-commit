@@ -1,0 +1,2 @@
+echo 'bunx lint-staged' > .husky/pre-commit
+chmod +x .husky/pre-commit
