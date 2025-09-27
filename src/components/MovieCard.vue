@@ -2,7 +2,9 @@
   <div
     class="w-96 h-auto mx-auto bg-gray-900 text-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300 flex flex-col relative mb-6 group"
   >
+    <!-- Favorite Button -->
     <button
+      v-if="loaded"
       @click="toggleFavorite"
       class="absolute top-3 right-3 p-2 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 z-10"
     >
@@ -10,13 +12,37 @@
         :class="isFav ? 'w-5 h-5 text-red-500' : 'w-5 h-5 text-white'"
       />
     </button>
-    <img
-      :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
-      :alt="movie.title"
-      class="w-full h-80 object-cover"
-    />
 
-    <div class="p-4 flex flex-col flex-1">
+    <div class="relative w-full h-80">
+      <div
+        v-if="!loaded"
+        class="absolute inset-0 flex items-center justify-center bg-gray-700 animate-pulse rounded-t-xl"
+      >
+        <svg
+          class="w-10 h-10 text-gray-500"
+          aria-hidden="true"
+          fill="currentColor"
+          viewBox="0 0 20 18"
+        >
+          <path
+            d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"
+          />
+        </svg>
+      </div>
+
+      <!-- Actual Image -->
+      <img
+        :src="currentSrc"
+        :alt="movie.title"
+        class="w-full h-full object-cover rounded-t-xl transition-opacity duration-700"
+        :class="{ 'opacity-0': !loaded, 'opacity-100': loaded }"
+        @load="onLoad"
+        @error="onError"
+      />
+    </div>
+
+    <!-- Movie Info -->
+    <div v-if="loaded" class="p-4 flex flex-col flex-1">
       <h2 class="text-2xl font-bold mb-2">{{ movie.title }}</h2>
       <p class="text-gray-400 text-sm mb-2">
         Release: {{ movie.release_date }} | Rating: {{ movie.vote_average }} ⭐
@@ -46,7 +72,7 @@
       </button>
     </div>
 
-    <div class="p-4">
+    <div v-if="loaded" class="p-4">
       <button
         @click="navigateToMovieDetails(movie.id)"
         class="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg font-semibold"
@@ -58,27 +84,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch, type Ref } from "vue";
 import { HeartIcon } from "@heroicons/vue/24/solid";
 import { useFavoritesStore } from "@/stores/favorites";
 import { useRouter } from "vue-router";
-import { toast } from 'vue3-toastify';
+import { toast } from "vue3-toastify";
+
+interface Movie {
+  id: number;
+  title: string;
+  poster_path: string;
+  overview: string;
+  release_date: string;
+  vote_average: number;
+}
 
 const showMore = ref(false);
+const loaded: Ref<boolean> = ref(false);
 const router = useRouter();
-const props = defineProps({
-  movie: {
-    type: Object,
-    required: true,
-  },
-  genreNames: {
-    type: Array,
-    default: () => [],
-  },
-});
+
+const props = defineProps<{
+  movie: Movie;
+  genreNames?: string[];
+}>();
 
 const favoritesStore = useFavoritesStore();
-
 const isFav = computed(() => favoritesStore.isFavorite(props.movie.id));
 
 function toggleFavorite() {
@@ -96,8 +126,30 @@ function navigateToMovieDetails(id: number) {
 }
 
 const shortOverview = computed(() => {
-  return props.movie?.overview?.length > 150
+  return props.movie.overview.length > 150
     ? props.movie.overview.slice(0, 150) + "..."
     : props.movie.overview;
 });
+
+const placeholderImage = "/images/placeholder.svg";
+const currentSrc: Ref<string> = ref(
+  `https://image.tmdb.org/t/p/w500/${props.movie.poster_path}`
+);
+
+function onLoad(): void {
+  loaded.value = true;
+}
+
+function onError(): void {
+  currentSrc.value = placeholderImage;
+  loaded.value = true;
+}
+
+watch(
+  () => props.movie.poster_path,
+  (newPath) => {
+    loaded.value = false;
+    currentSrc.value = `https://image.tmdb.org/t/p/w500/${newPath}`;
+  }
+);
 </script>
