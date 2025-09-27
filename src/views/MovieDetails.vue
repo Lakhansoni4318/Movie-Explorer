@@ -1,6 +1,27 @@
 <template>
+  <!-- Error Handling -->
+  <div v-if="error" class="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-gray-900 to-black text-white px-6">
+    <div class="bg-gray-800 rounded-2xl shadow-2xl p-10 max-w-md text-center animate-fadeIn">
+      <div class="text-6xl mb-4">🎬</div>
+      <h1 class="text-3xl font-bold text-red-400 mb-2">Oops!</h1>
+      <p class="text-gray-300 mb-6">{{ error }}</p>
+      <button
+        @click="retryFetch"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-transform transform hover:scale-105"
+      >
+        🔄 Retry
+      </button>
+      <button
+        @click="goHome"
+        class="mt-4 ms-4 bg-gray-700 hover:bg-gray-800 text-white font-medium px-6 py-3 rounded-lg transition-transform transform hover:scale-105"
+      >
+        🏠 Go Home
+      </button>
+    </div>
+  </div>
+
   <!-- Movie Details -->
-  <div class="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen p-6" v-if="movie">
+  <div v-else-if="movie" class="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen p-6">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Left Side Poster -->
       <div class="flex justify-center">
@@ -42,6 +63,7 @@
           <span
             v-for="genre in movie.genres"
             :key="genre.id"
+            v-memo="[genre.id]"
             class="px-3 py-1 rounded-full bg-purple-700 text-xs"
           >
             {{ genre.name }}
@@ -88,7 +110,7 @@
         <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
           <h3 class="text-xl font-semibold text-blue-400 mb-2">Production</h3>
           <ul class="list-disc ml-6 text-gray-300">
-            <li v-for="company in movie.production_companies" :key="company.id">
+            <li v-for="company in movie.production_companies" v-memo="[company.id]" :key="company.id">
               {{ company.name }}
             </li>
           </ul>
@@ -106,13 +128,16 @@
 <script lang="ts" setup>
 import apiService from '@/api/apiService';
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 const movieId = Number(route.params.id);
+
 const movie = ref<any>(null);
 const trailerUrl = ref<string | null>(null);
 const loadingImage = ref(true);
+const error = ref<string | null>(null);
 
 onMounted(() => {
   fetchMovieDetails(movieId);
@@ -120,8 +145,17 @@ onMounted(() => {
 
 async function fetchMovieDetails(id: number) {
   try {
-    loadingImage.value = true; // reset skeleton before loading new image
+    loadingImage.value = true;
+    error.value = null;
+
     const { data } = await apiService.movieDetails(id);
+
+    if (!data || !data.id) {
+      error.value = 'Movie not found. Please check the ID.';
+      movie.value = null;
+      return;
+    }
+
     movie.value = data;
 
     const videosRes = await apiService.movieVideos(id);
@@ -131,8 +165,10 @@ async function fetchMovieDetails(id: number) {
 
     trailerUrl.value =
       trailers.length > 0 ? `https://www.youtube.com/watch?v=${trailers[0].key}` : null;
-  } catch (error) {
-    console.error('Failed to fetch movie details or trailer:', error);
+  } catch (err) {
+    console.error('Failed to fetch movie details or trailer:', err);
+    error.value = 'Failed to fetch movie details. Please try again later.';
+    movie.value = null;
   }
 }
 
@@ -141,4 +177,23 @@ function openTrailer() {
     window.open(trailerUrl.value, '_blank');
   }
 }
+
+function retryFetch() {
+  fetchMovieDetails(movieId);
+}
+
+function goHome() {
+  router.push('/');
+}
 </script>
+
+<style scoped>
+/* Fade-in animation for error card */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out;
+}
+</style>

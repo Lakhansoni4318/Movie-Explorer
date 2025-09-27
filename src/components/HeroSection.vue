@@ -5,6 +5,7 @@
     <img
       src="https://www.shutterstock.com/image-vector/cinema-hall-blank-screen-rows-600nw-2469487429.jpg"
       alt="Cinema"
+      loading="lazy"
       class="w-full h-72 md:h-96 object-cover"
     />
 

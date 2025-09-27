@@ -11,6 +11,7 @@
         v-for="m in favorites"
         :key="m.id"
         :movie="m"
+        v-memo="[m.id, m.genreNames]"
         :genre-names="getGenreNames(m)"
       />
     </div>
@@ -22,11 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
-import { storeToRefs } from "pinia";
-import { useFavoritesStore } from "@/stores/favorites";
-import { useGenresStore } from "@/stores/useGenresStore";
-import MovieCard from "@/components/MovieCard.vue";
+import { ref, onMounted, onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useFavoritesStore } from '@/stores/favorites';
+import { useGenresStore } from '@/stores/useGenresStore';
+import MovieCard from '@/components/MovieCard.vue';
 
 const favoritesStore = useFavoritesStore();
 const { favorites } = storeToRefs(favoritesStore);
@@ -35,21 +36,19 @@ const genresStore = useGenresStore();
 const { genres } = storeToRefs(genresStore);
 
 const getGenreNames = (movie: any) => {
-  return genres.value
-    .filter((g: any) => movie.genre_ids?.includes(g.id))
-    .map((g: any) => g.name);
+  return genres.value.filter((g: any) => movie.genre_ids?.includes(g.id)).map((g: any) => g.name);
 };
 
 const isOnline = ref(navigator.onLine);
 const updateOnlineStatus = () => (isOnline.value = navigator.onLine);
 
 onMounted(() => {
-  window.addEventListener("online", updateOnlineStatus);
-  window.addEventListener("offline", updateOnlineStatus);
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("online", updateOnlineStatus);
-  window.removeEventListener("offline", updateOnlineStatus);
+  window.removeEventListener('online', updateOnlineStatus);
+  window.removeEventListener('offline', updateOnlineStatus);
 });
 </script>

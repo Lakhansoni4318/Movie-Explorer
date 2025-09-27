@@ -17,7 +17,7 @@
 
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from "vue";
-import MovieCard from "./MovieCard.vue";
+import MovieCard from "@/components/MovieCard.vue";
 
 const props = defineProps({
   moviesData: [Object, String],
