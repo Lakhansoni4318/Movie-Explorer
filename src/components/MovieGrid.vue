@@ -9,26 +9,23 @@
       />
     </div>
 
-    <div class="flex justify-center mt-6">
-      <button
-        v-if="moviesData?.page < moviesData?.total_pages"
-        @click="$emit('loadMore')"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold"
-      >
-        Show More
-      </button>
+    <div v-if="isLoading" class="flex justify-center mt-6">
+      <span class="text-gray-500">Loading...</span>
     </div>
   </section>
 </template>
 
 <script setup>
+import { ref, watch, onMounted, onUnmounted } from "vue";
 import MovieCard from "./MovieCard.vue";
-defineEmits(["loadMore"]);
 
 const props = defineProps({
   moviesData: [Object, String],
   genredata: Array,
 });
+
+const emit = defineEmits(["loadMore"]);
+const isLoading = ref(false);
 
 const getGenreNames = (movie) => {
   if (!movie) return [];
@@ -39,4 +36,32 @@ const getGenreNames = (movie) => {
   }
   return [];
 };
+
+const handleScroll = () => {
+  const scrollTop = window.scrollY;
+  const windowHeight = window.innerHeight;
+  const fullHeight = document.documentElement.scrollHeight;
+
+  if (scrollTop + windowHeight >= fullHeight - 200 && !isLoading.value) {
+    if (props.moviesData?.page < props.moviesData?.total_pages) {
+      isLoading.value = true;
+      emit("loadMore");
+    }
+  }
+};
+
+watch(
+  () => props.moviesData,
+  () => {
+    isLoading.value = false;
+  }
+);
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>

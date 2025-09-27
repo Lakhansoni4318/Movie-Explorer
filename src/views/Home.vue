@@ -2,7 +2,7 @@
   <div>
     <HeroSection />
 
-    <SearchBar ref="searchRef" :genres="genres" @onSearch="handleSearch" />
+    <SearchBar ref="searchRef" :genres="genres" @callPopularMovie="fetchPopularMovies" @onSearch="handleSearch" />
 
     <h2 class="text-2xl font-bold mb-4">Popular Movies</h2>
 

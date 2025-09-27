@@ -138,7 +138,6 @@ async function fetchMovieDetails(id: number) {
 
     if (trailers.length > 0) {
       trailerUrl.value = `https://www.youtube.com/watch?v=${trailers[0].key}`;
-      console.log(trailerUrl.value)
     }
   } catch (error) {
     console.error("Failed to fetch movie details or trailer:", error);
