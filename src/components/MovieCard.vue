@@ -6,6 +6,7 @@
     <button
       v-if="loaded"
       @click="toggleFavorite"
+      data-testid="favorite-button"
       class="absolute top-3 right-3 p-2 rounded-full bg-black/60 z-10 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition duration-300"
     >
       <HeartIcon :class="isFav ? 'w-5 h-5 text-red-500' : 'w-5 h-5 text-white'" />
@@ -128,6 +129,7 @@
       <div class="flex justify-end gap-3 mt-4">
         <button
           @click="confirmFavoriteAction"
+          data-testid="modal-confirm-button"
           class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded"
         >
           Yes

@@ -3,6 +3,7 @@
     <!-- Search Input -->
     <div class="flex flex-col gap-4">
       <input
+      data-testid="search-input"
         v-model="searchQuery"
         type="text"
         placeholder="Enter movie title..."
@@ -78,6 +79,7 @@
       <!-- Actions -->
       <div class="flex gap-3">
         <button
+         data-testid="search-btn"
           @click="onSearchClick"
           class="flex-1 px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium"
         >
@@ -101,6 +103,7 @@
         </button>
 
         <button
+          data-testid="clear-btn"
           @click="onClearClick"
           class="px-6 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium text-white"
         >
@@ -112,7 +115,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from "vue";
+import { ref, defineEmits } from "vue";
 import { useMoviesStore } from "@/stores/movies";
 
 interface Genre {
