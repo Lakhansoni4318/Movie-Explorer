@@ -1,11 +1,12 @@
 <template>
   <header class="sticky top-0 z-50 bg-gray-900/95 backdrop-blur-md shadow-md">
     <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-      <h1
+      <router-link
+        to="/"
         class="text-2xl font-extrabold tracking-wide text-purple-500 cursor-pointer hover:text-purple-400 transition"
       >
         🎬 Movie Explorer
-      </h1>
+      </router-link>
 
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-6">

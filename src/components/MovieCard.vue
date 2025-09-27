@@ -62,6 +62,18 @@
         <span v-if="!showMore">{{ shortOverview }}</span>
         <span v-else>{{ movie.overview }}</span>
       </p>
+      <!-- Only show notes/rating on Favorites page -->
+      <div
+        v-if="$route.name == 'favorites' && isFav"
+        class="mt-2 p-2 bg-gray-800 rounded"
+      >
+        <p v-if="movie.notes" class="text-sm text-gray-300">
+          📝 Notes: {{ movie.notes }}
+        </p>
+        <p v-if="movie.rating" class="text-sm text-yellow-400">
+          ⭐ Rating: {{ movie.rating }}/5
+        </p>
+      </div>
 
       <button
         v-if="movie.overview.length > 150"
@@ -81,6 +93,57 @@
       </button>
     </div>
   </div>
+
+  <!-- Favorite Confirmation Modal -->
+  <div
+    v-if="showFavModal"
+    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+  >
+    <div class="bg-gray-900 p-6 rounded-lg w-96 text-white">
+      <template v-if="modalAction === 'add'">
+        <h3 class="text-lg font-semibold mb-4">Add to Favorites?</h3>
+
+        <label class="block mb-2">Notes (optional)</label>
+        <textarea
+          v-model="note"
+          placeholder="Add your notes..."
+          class="w-full h-24 p-2 rounded bg-gray-800 border border-gray-700 text-white mb-3"
+        ></textarea>
+
+        <label class="block mb-2">Rating (optional)</label>
+        <input
+          type="number"
+          v-model.number="rating"
+          min="1"
+          max="5"
+          placeholder="1-5"
+          class="w-full p-2 rounded bg-gray-800 border border-gray-700 text-white"
+        />
+      </template>
+
+      <template v-else-if="modalAction === 'remove'">
+        <h3 class="text-lg font-semibold mb-4">
+          Are you sure you want to remove this movie from favorites?
+        </h3>
+        <p>{{ selectedMovie?.title }}</p>
+      </template>
+
+      <div class="flex justify-end gap-3 mt-4">
+        <button
+          @click="confirmFavoriteAction"
+          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded"
+        >
+          Yes
+        </button>
+        <button
+          @click="closeFavModal"
+          class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -97,28 +160,65 @@ interface Movie {
   overview: string;
   release_date: string;
   vote_average: number;
+  notes: string;
+  rating: number;
 }
 
 const showMore = ref(false);
 const loaded: Ref<boolean> = ref(false);
 const router = useRouter();
+const showFavModal = ref(false);
+const modalAction = ref<"add" | "remove" | null>(null);
+const note = ref("");
+const rating = ref<number | null>(null);
+let selectedMovie: Movie | null = null;
 
 const props = defineProps<{
   movie: Movie;
   genreNames?: string[];
+  showUserData?: boolean;
 }>();
 
 const favoritesStore = useFavoritesStore();
 const isFav = computed(() => favoritesStore.isFavorite(props.movie.id));
 
 function toggleFavorite() {
+  selectedMovie = props.movie;
   if (isFav.value) {
-    favoritesStore.removeFavorite(props.movie.id);
-    toast.info("Movie removed from favorites");
+    modalAction.value = "remove";
+    showFavModal.value = true;
   } else {
-    favoritesStore.addFavorite(props.movie);
-    toast.success("Movie added to favorites");
+    modalAction.value = "add";
+    note.value = "";
+    rating.value = null;
+    showFavModal.value = true;
   }
+}
+
+function closeFavModal() {
+  showFavModal.value = false;
+  modalAction.value = null;
+  selectedMovie = null;
+  note.value = "";
+  rating.value = null;
+}
+
+function confirmFavoriteAction() {
+  if (!selectedMovie) return;
+
+  if (modalAction.value === "add") {
+    favoritesStore.addFavorite({
+      ...selectedMovie,
+      notes: note.value || "",
+      rating: rating.value || 0,
+    });
+    toast.success("Movie added to favorites");
+  } else if (modalAction.value === "remove") {
+    favoritesStore.removeFavorite(selectedMovie.id);
+    toast.info("Movie removed from favorites");
+  }
+
+  closeFavModal();
 }
 
 function navigateToMovieDetails(id: number) {

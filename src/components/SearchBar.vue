@@ -113,7 +113,7 @@
 
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from "vue";
-import ApiService from "@/api/apiService";
+import { useMoviesStore } from "@/stores/movies";
 
 interface Genre {
   id: number;
@@ -126,6 +126,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "onSearch", results: any[]): void;
+  (e: "callPopularMovie"): void;
 }>();
 
 // State
@@ -143,6 +144,9 @@ const releaseYears: number[] = Array.from(
   (_, i) => currentYear - i
 );
 
+// Pinia store
+const moviesStore = useMoviesStore();
+
 // Methods
 const toggleFilters = () => {
   showFilters.value = !showFilters.value;
@@ -156,18 +160,18 @@ const onSearchClick = async () => {
 
   errorMessage.value = "";
 
-  const payload: Record<string, string> = {
+  const payload:any = {
     query: searchQuery.value,
-    page: "1"
+    page: "1",
   };
 
   if (selectedYear.value) payload.year = selectedYear.value;
   if (selectedGenre.value) payload.with_genres = selectedGenre.value;
 
   try {
-    const { data } = await ApiService.searchMovies(payload);
-    emit("onSearch", data);
-  } catch (err) {
+    const results = await moviesStore.searchMovies(payload);
+    emit("onSearch", results);
+  } catch {
     errorMessage.value = "Failed to fetch movies. Please try again.";
   }
 };
@@ -177,5 +181,6 @@ const onClearClick = () => {
   selectedYear.value = "";
   selectedGenre.value = "";
   errorMessage.value = "";
+  emit("callPopularMovie");
 };
 </script>
