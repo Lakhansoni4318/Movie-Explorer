@@ -48,7 +48,7 @@
 
     <div class="p-4">
       <button
-      @click="navigateToMovieDetails(movie.id)"
+        @click="navigateToMovieDetails(movie.id)"
         class="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg font-semibold"
       >
         View Details
@@ -62,6 +62,7 @@ import { ref, computed } from "vue";
 import { HeartIcon } from "@heroicons/vue/24/solid";
 import { useFavoritesStore } from "@/stores/favorites";
 import { useRouter } from "vue-router";
+import { toast } from 'vue3-toastify';
 
 const showMore = ref(false);
 const router = useRouter();
@@ -83,13 +84,15 @@ const isFav = computed(() => favoritesStore.isFavorite(props.movie.id));
 function toggleFavorite() {
   if (isFav.value) {
     favoritesStore.removeFavorite(props.movie.id);
+    toast.info("Movie removed from favorites");
   } else {
     favoritesStore.addFavorite(props.movie);
+    toast.success("Movie added to favorites");
   }
 }
 
-function navigateToMovieDetails(id:number){
-router.push({ name: "MovieDetails", params: { id } });
+function navigateToMovieDetails(id: number) {
+  router.push({ name: "MovieDetails", params: { id } });
 }
 
 const shortOverview = computed(() => {
