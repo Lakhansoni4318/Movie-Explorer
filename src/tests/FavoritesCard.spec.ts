@@ -34,7 +34,7 @@ async function mountMovieCard(routeName = "Home") {
       },
     },
   });
-  wrapper.vm.loaded = true;
+  (wrapper.vm as any).loaded = true;
   await nextTick();
   return wrapper;
 }
@@ -56,7 +56,7 @@ describe("MovieCard.vue Favorites functionality", () => {
     expect(store.favorites).toHaveLength(1);
     expect(store.favorites[0].id).toBe(movie.id);
     expect(toast.success).toHaveBeenCalledWith("Movie added to favorites");
-    expect(wrapper.vm.showFavModal).toBe(false);
+    expect((wrapper.vm as any).showFavModal).toBe(false);
   });
 
   it("removes a movie from favorites", async () => {
@@ -64,12 +64,12 @@ describe("MovieCard.vue Favorites functionality", () => {
     const wrapper = await mountMovieCard();
 
     await wrapper.find('[data-testid="favorite-button"]').trigger("click");
-    expect(wrapper.vm.modalAction).toBe("remove");
+    expect((wrapper.vm as any).modalAction).toBe("remove");
 
     await wrapper.find('[data-testid="modal-confirm-button"]').trigger("click");
 
     expect(store.favorites).toHaveLength(0);
     expect(toast.info).toHaveBeenCalledWith("Movie removed from favorites");
-    expect(wrapper.vm.showFavModal).toBe(false);
+    expect((wrapper.vm as any).showFavModal).toBe(false);
   });
 });
