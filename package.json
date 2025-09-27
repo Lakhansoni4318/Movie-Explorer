@@ -35,8 +35,7 @@
   },
   "lint-staged": {
     "*.{js,ts,vue,css,scss,html,json,md}": [
-      "prettier --write",
-      "git add"
+      "bunx prettier --write"
     ]
   }
 }
