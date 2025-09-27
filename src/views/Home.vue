@@ -19,11 +19,11 @@
 </template>
 
 <script setup>
-import { onMounted, ref, reactive } from "vue";
+import { onMounted, ref, reactive, defineAsyncComponent } from "vue";
 import HeroSection from "@/components/HeroSection.vue";
 import SearchBar from "@/components/SearchBar.vue";
 import MovieGrid from "@/components/MovieGrid.vue";
-import NoMovies from "@/components/NoMovies.vue";
+const NoMovies = defineAsyncComponent(() => import('@/components/NoMovies.vue'));
 import ApiService from "@/api/apiService.ts";
 import { useGenresStore } from "@/stores/useGenresStore";
 
