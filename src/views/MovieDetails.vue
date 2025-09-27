@@ -110,7 +110,6 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const movieId = Number(route.params.id);
-console.log(movieId);
 const movie = ref<any>(null);
 const trailerUrl = ref<string | null>(null);
 const loadingImage = ref(true);
