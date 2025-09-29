@@ -178,7 +178,7 @@ Navigation is implemented using `<RouterLink>`.
 
 ## Deployment
 
-- Project deployed on **Vercel** → [Movie Explorer Live](https://movie-explorer.vercel.app)
+- Project deployed on **Vercel** → [Movie Explorer Live](https://movix-explorer.vercel.app)
 - Continuous deployment supported via GitHub repository
 
 ---
