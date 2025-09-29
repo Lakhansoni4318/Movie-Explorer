@@ -1,6 +1,7 @@
 # Movie Explorer
 
 ## Overview
+
 **Movie Explorer** is a Vue 3 + TypeScript web application built with Vite that allows users to search for movies, view details, and manage a personal list of favorite movies. It integrates with the TMDB (The Movie Database) API and includes offline support, local caching, and advanced UI/UX features.
 
 This project demonstrates modern Vue 3 features, Composition API, Pinia state management, routing, performance optimizations, form validation, and code quality practices such as Husky pre-commit and pre-push checks.
@@ -18,11 +19,11 @@ This project demonstrates modern Vue 3 features, Composition API, Pinia state ma
 7. [Form Handling & Validation](#form-handling--validation)
 8. [Performance & UX](#performance--ux)
 9. [Offline Support & Caching](#offline-support--caching)
-11. [Husky & Code Quality](#husky--code-quality)
-12. [Deployment](#deployment)
-13. [TMDB API Integration](#tmdb-api-integration)
-14. [Usage](#usage)
-15. [Credits](#credits)
+10. [Husky & Code Quality](#husky--code-quality)
+11. [Deployment](#deployment)
+12. [TMDB API Integration](#tmdb-api-integration)
+13. [Usage](#usage)
+14. [Credits](#credits)
 
 ---
 
@@ -65,33 +66,39 @@ This project demonstrates modern Vue 3 features, Composition API, Pinia state ma
 ## Setup & Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/Lakhansoni4318/Movie-Explorer.git
 cd Movie-Explorer
 ```
 
 2. Install dependencies:
+
 ```bash
 bun install
 ```
 
 3. Create a `.env` file in the root directory and add your TMDB API key:
+
 ```
 VITE_TMDB_API_KEY=your_api_key_here
 VITE_API_BASE_URL=https://api.themoviedb.org/3/
 ```
 
 4. Run the development server:
+
 ```bash
 bun run dev
 ```
 
 5. Build for production:
+
 ```bash
 bun run build
 ```
 
 6. Preview production build locally:
+
 ```bash
 bun run preview
 ```
@@ -171,7 +178,7 @@ Navigation is implemented using `<RouterLink>`.
 
 ## Deployment
 
-- Project deployed on **Vercel**
+- Project deployed on **Vercel** → [Movie Explorer Live](https://movie-explorer-lakhan.vercel.app)
 - Continuous deployment supported via GitHub repository
 
 ---
@@ -206,5 +213,4 @@ Navigation is implemented using `<RouterLink>`.
 
 ---
 
-*This README was generated to comprehensively document the Movie Explorer project, its architecture, features, and setup instructions.*
-
+_This README was generated to comprehensively document the Movie Explorer project, its architecture, features, and setup instructions._
