@@ -186,6 +186,8 @@ function toggleFavorite() {
   } else {
     modalAction.value = 'add';
     note.value = '';
+    console.log('jello');
+
     rating.value = null;
     showFavModal.value = true;
   }
